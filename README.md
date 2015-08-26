@@ -18,7 +18,7 @@ import (
 
 func main() {
 	log := logrus.New()
-	hooker, err := mgorus.NewHooker("localhost:27017")
+	hooker, err := mgorus.NewHooker("localhost:27017", "db", "collection")
 	if err == nil {
 	    log.Hooks.Add(hooker)
 	}
