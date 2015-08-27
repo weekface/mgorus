@@ -1,6 +1,8 @@
 package mgorus
 
 import (
+	"fmt"
+
 	"github.com/Sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -22,7 +24,12 @@ func NewHooker(mgoUrl, db, collection string) (*hooker, error) {
 }
 
 func (h *hooker) Fire(entry *logrus.Entry) error {
-	return h.c.Insert(M(entry.Data))
+	mgoErr := h.c.Insert(M(entry.Data))
+	if mgoErr != nil {
+		return fmt.Errorf("Failed to send log entry to mongodb: %s", mgoErr)
+	}
+
+	return nil
 }
 
 func (h *hooker) Levels() []logrus.Level {
