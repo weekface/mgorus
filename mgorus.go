@@ -24,11 +24,10 @@ func NewHooker(mgoUrl, db, collection string) (*hooker, error) {
 }
 
 func (h *hooker) Fire(entry *logrus.Entry) error {
-	data := entry.Data
-	data["Level"] = entry.Level.String()
-	data["Time"] = entry.Time
-	data["Message"] = entry.Message
-	mgoErr := h.c.Insert(M(data))
+	entry.Data["Level"] = entry.Level.String()
+	entry.Data["Time"] = entry.Time
+	entry.Data["Message"] = entry.Message
+	mgoErr := h.c.Insert(M(entry.Data))
 	if mgoErr != nil {
 		return fmt.Errorf("Failed to send log entry to mongodb: %s", mgoErr)
 	}
