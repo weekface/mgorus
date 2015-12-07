@@ -27,6 +27,11 @@ func (h *hooker) Fire(entry *logrus.Entry) error {
 	entry.Data["Level"] = entry.Level.String()
 	entry.Data["Time"] = entry.Time
 	entry.Data["Message"] = entry.Message
+	if errData, ok := entry.Data[logrus.ErrorKey]; ok  {
+		if err, ok := errData.(error); ok && entry.Data[logrus.ErrorKey]!=nil {
+				entry.Data[logrus.ErrorKey] = err.Error()
+		}
+	}
 	mgoErr := h.c.Insert(M(entry.Data))
 	if mgoErr != nil {
 		return fmt.Errorf("Failed to send log entry to mongodb: %s", mgoErr)
