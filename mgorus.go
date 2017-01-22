@@ -23,6 +23,19 @@ func NewHooker(mgoUrl, db, collection string) (*hooker, error) {
 	return &hooker{c: session.DB(db).C(collection)}, nil
 }
 
+func NewHookerWithAuth(mgoUrl, db, collection, user, pass string) (*hooker, error) {
+	session, err := mgo.Dial(mgoUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := session.DB(db).Login(user, pass); err != nil {
+		return nil, fmt.Errorf("Failed to login to mongodb: %v", err)
+	}
+
+	return &hooker{c: session.DB(db).C(collection)}, nil
+}
+
 func (h *hooker) Fire(entry *logrus.Entry) error {
 	entry.Data["Level"] = entry.Level.String()
 	entry.Data["Time"] = entry.Time
@@ -34,7 +47,7 @@ func (h *hooker) Fire(entry *logrus.Entry) error {
 	}
 	mgoErr := h.c.Insert(M(entry.Data))
 	if mgoErr != nil {
-		return fmt.Errorf("Failed to send log entry to mongodb: %s", mgoErr)
+		return fmt.Errorf("Failed to send log entry to mongodb: %v", mgoErr)
 	}
 
 	return nil

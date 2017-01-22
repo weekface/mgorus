@@ -21,6 +21,34 @@ func main() {
 	hooker, err := mgorus.NewHooker("localhost:27017", "db", "collection")
 	if err == nil {
 	    log.Hooks.Add(hooker)
+	} else {
+		fmt.Print(err)
+	}
+
+	log.WithFields(logrus.Fields{
+		"name": "zhangsan",
+		"age":  28,
+	}).Error("Hello world!")
+}
+```
+
+With authentication:
+
+```go
+package main
+
+import (
+	"github.com/Sirupsen/logrus"
+	"github.com/weekface/mgorus"
+)
+
+func main() {
+	log := logrus.New()
+	hooker, err := mgorus.NewHookerWithAuth("localhost:27017", "db", "collection", "user", "pass")
+	if err == nil {
+	    log.Hooks.Add(hooker)
+	} else {
+		fmt.Print(err)
 	}
 
 	log.WithFields(logrus.Fields{
