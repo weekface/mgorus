@@ -37,15 +37,21 @@ func NewHookerWithAuth(mgoUrl, db, collection, user, pass string) (*hooker, erro
 }
 
 func (h *hooker) Fire(entry *logrus.Entry) error {
-	entry.Data["Level"] = entry.Level.String()
-	entry.Data["Time"] = entry.Time
-	entry.Data["Message"] = entry.Message
-	if errData, ok := entry.Data[logrus.ErrorKey]; ok {
-		if err, ok := errData.(error); ok && entry.Data[logrus.ErrorKey] != nil {
-			entry.Data[logrus.ErrorKey] = err.Error()
+	data := make(logrus.Fields)
+	data["Level"] = entry.Level
+	data["Time"] = entry.Time
+	data["Message"] = entry.Message
+
+	for k, v := range entry.Data {
+		if errData, isError := v.(error); logrus.ErrorKey == k && v != nil && isError {
+			data[k] = errData.Error()
+		} else {
+			data[k] = v
 		}
 	}
-	mgoErr := h.c.Insert(M(entry.Data))
+
+	mgoErr := h.c.Insert(M(data))
+
 	if mgoErr != nil {
 		return fmt.Errorf("Failed to send log entry to mongodb: %v", mgoErr)
 	}
