@@ -23,6 +23,10 @@ func NewHooker(mgoUrl, db, collection string) (*hooker, error) {
 	return &hooker{c: session.DB(db).C(collection)}, nil
 }
 
+func NewHookerFromCollection(collection *mgo.Collection)*hooker{
+	return &hooker{c: collection}
+}
+
 func NewHookerWithAuth(mgoUrl, db, collection, user, pass string) (*hooker, error) {
 	session, err := mgo.Dial(mgoUrl)
 	if err != nil {
