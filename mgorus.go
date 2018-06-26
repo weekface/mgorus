@@ -23,7 +23,7 @@ func NewHooker(mgoUrl, db, collection string) (*hooker, error) {
 	return &hooker{c: session.DB(db).C(collection)}, nil
 }
 
-func NewHookerFromCollection(collection *mgo.Collection)*hooker{
+func NewHookerFromCollection(collection *mgo.Collection) *hooker {
 	return &hooker{c: collection}
 }
 
@@ -55,9 +55,9 @@ func NewHookerWithAuthDb(mgoUrl, authdb, db, collection, user, pass string) (*ho
 
 func (h *hooker) Fire(entry *logrus.Entry) error {
 	data := make(logrus.Fields)
-	data["Level"] = entry.Level
-	data["Time"] = entry.Time
-	data["Message"] = entry.Message
+	data["level"] = entry.Level.String()
+	data["datetime"] = entry.Time
+	data["message"] = entry.Message
 
 	for k, v := range entry.Data {
 		if errData, isError := v.(error); logrus.ErrorKey == k && v != nil && isError {
