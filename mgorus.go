@@ -56,7 +56,7 @@ func NewHookerWithAuthDb(mgoUrl, authdb, db, collection, user, pass string) (*ho
 func (h *hooker) Fire(entry *logrus.Entry) error {
 	data := make(logrus.Fields)
 	data["Level"] = entry.Level.String()
-	data["Datetime"] = entry.Time
+	data["Time"] = entry.Time
 	data["Message"] = entry.Message
 
 	for k, v := range entry.Data {
