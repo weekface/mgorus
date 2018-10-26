@@ -77,12 +77,5 @@ func (h *hooker) Fire(entry *logrus.Entry) error {
 }
 
 func (h *hooker) Levels() []logrus.Level {
-	return []logrus.Level{
-		logrus.PanicLevel,
-		logrus.FatalLevel,
-		logrus.ErrorLevel,
-		logrus.WarnLevel,
-		logrus.InfoLevel,
-		logrus.DebugLevel,
-	}
+	return logrus.AllLevels
 }
